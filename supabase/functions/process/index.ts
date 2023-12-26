@@ -60,8 +60,8 @@ Deno.serve(async (req) => {
   }
 
   const { data: file } = await supabase.storage
-  .from('files')
-  .download(document.storage_object_path);
+    .from('files')
+    .download(document.storage_object_path);
 
   if (!file) {
     return new Response(
@@ -74,4 +74,28 @@ Deno.serve(async (req) => {
   }
 
   const fileContents = await file.text();
+
+  const processedMd = processMarkdown(fileContents);
+
+  const { error } = await supabase.from('document_sections').insert(
+    processedMd.sections.map(({ content }) => ({
+      document_id,
+      content,
+    }))
+  );
+
+  if (error) {
+    console.error(error);
+    return new Response(
+      JSON.stringify({ error: 'Failed to save document sections' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  console.log(
+    `Saved ${processedMd.sections.length} sections for file '${document.name}'`
+  );
 });
