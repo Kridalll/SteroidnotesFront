@@ -58,4 +58,20 @@ Deno.serve(async (req) => {
       }
     );
   }
+
+  const { data: file } = await supabase.storage
+  .from('files')
+  .download(document.storage_object_path);
+
+  if (!file) {
+    return new Response(
+      JSON.stringify({ error: 'Failed to download storage object' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  const fileContents = await file.text();
 });
