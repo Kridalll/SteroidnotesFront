@@ -64,5 +64,43 @@ Deno.serve(async (req) => {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  for (const row of rows) {
+    const { id, [contentColumn]: content } = row;
+  
+    if (!content) {
+      console.error(`No content available in column '${contentColumn}'`);
+      continue;
+    }
+  
+    const output = await generateEmbedding(content, {
+      pooling: 'mean',
+      normalize: true,
+    });
+  
+    const embedding = JSON.stringify(Array.from(output.data));
+  
+    const { error } = await supabase
+      .from(table)
+      .update({
+        [embeddingColumn]: embedding,
+      })
+      .eq('id', id);
+  
+    if (error) {
+      console.error(
+        `Failed to save embedding on '${table}' table with id ${id}`
+      );
+    }
+  
+    console.log(
+      `Generated embedding ${JSON.stringify({
+        table,
+        id,
+        contentColumn,
+        embeddingColumn,
+      })}`
+    );
+  }
 });
 
