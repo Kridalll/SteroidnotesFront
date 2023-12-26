@@ -21,7 +21,7 @@ create table document_sections (
   id bigint primary key generated always as identity,
   document_id bigint not null references documents (id),
   content text not null,
-  embedding vector (512)
+  embedding vector (384)
 --   embedding vector SIZE should be LESSER than or EQUAL to the actual model embedding size we using
 );
 
