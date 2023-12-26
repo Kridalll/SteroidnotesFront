@@ -98,4 +98,9 @@ Deno.serve(async (req) => {
   console.log(
     `Saved ${processedMd.sections.length} sections for file '${document.name}'`
   );
+  
+  return new Response(null, {
+    status: 204,
+    headers: { 'Content-Type': 'application/json' },
+  })
 });
