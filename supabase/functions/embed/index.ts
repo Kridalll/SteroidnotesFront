@@ -101,6 +101,11 @@ Deno.serve(async (req) => {
         embeddingColumn,
       })}`
     );
+
+    return new Response(null, {
+      status: 204,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 });
 
