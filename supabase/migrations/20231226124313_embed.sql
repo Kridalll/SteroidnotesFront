@@ -31,3 +31,9 @@ begin
   return null;
 end;
 $$;
+
+create trigger embed_document_sections
+  after insert on document_sections
+  referencing new table as inserted
+  for each statement
+  execute procedure private.embed(content, embedding, 5); -- changed this to 5 to help with reports of CPU limits reached
